@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+require("better-stack-traces").install();
+var backend = require("../src/backend");
+var DummySphero = require("../src/DummySphero");
+
+// Keep the app running despite random errors in zerorpc and bluetooth.
+process.on("uncaughtException", function(err){
+  console.warn("Uncaught Exception:", err);
+});
+
+backend({
+  sphero: new DummySphero(),
+  spheroPort: 7778,
+  httpPort: 7777,
+  logger: console
+});

@@ -1,0 +1,38 @@
+{
+  "name": "visitorlist",
+  "scripts": {
+    "start": "bin/serve",
+    "test": "node test"
+  },
+  "dependencies": {
+
+    "express": "3.x",
+    "socket.io": "*",
+
+    "sync": "*",
+    "node-sphero": "*",
+    "zerorpc": "*",
+    "rsvp": "*",
+
+    "mustache": "0.7.x",
+    "underscore": "1.4.x",
+    "backbone": "1.x",
+    "jquery": "1.8.x",
+
+    "enchilada": "*",
+    "rfileify": "1.x",
+    "rfile": "1.x",
+
+    "better-stack-traces": "*",
+    "supervisor": "*",
+
+    "glob": "*",
+    "mocha": "*"
+
+  },
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=0.8.x"
+  },
+  "private": true
+}
