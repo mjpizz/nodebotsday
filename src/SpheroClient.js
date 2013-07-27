@@ -135,6 +135,10 @@ SpheroClient.prototype.stop = function() {
 }
 
 SpheroClient.prototype.turn = function(heading) {
+  if (heading < 0) {
+    heading = 360 + heading;
+  }
+  heading = heading % 360;
   this._heading = heading;
   return this._invokeAsPromise("setHeading", this._heading);
 }
