@@ -60,4 +60,10 @@ $(function() {
   makeButton("roll", [1, 2]);
   makeButton("roll", [0.5, 3]);
   makeButton("stop");
+
+  // Show print messages.
+  socket.on("print", function(message) {
+    alert(message);
+  });
+
 });

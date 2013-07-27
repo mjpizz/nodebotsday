@@ -59,14 +59,7 @@ module.exports = function run(options) {
     function run(code, stopCallback) {
       console.log("running...");
       try {
-
-        // Create a two-way sandbox of functions for the script.
-        var sandbox = {
-          waitForStop: function() {
-            stopCallback.sync(this);
-          }
-        };
-        runner.runSync(code, sandbox, function(err) {
+        runner.runSync(code, socket, function(err) {
           if (err) return console.error(err.stack);
           console.info("done running.")
         });
@@ -82,9 +75,7 @@ module.exports = function run(options) {
 
     socket.on("run", function(options) {
       save(getCodePath(options.path), options.code);
-      run(options.code, function(callback) {
-        socket.on("stop", callback);
-      });
+      run(options.code);
     });
 
     socket.on("call", function(options) {
