@@ -1,5 +1,7 @@
 # nodebotsday 2013
 
+This is a prototype repo for letting first-time programmers hack on the Sphero.
+
 Example...
 
     var ball = new Sphero();
