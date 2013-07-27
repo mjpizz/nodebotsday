@@ -1,8 +1,10 @@
 var vm = require("vm");
 var sync = require("sync");
 var syncify = require("./syncify");
+var Controller = require("./Controller");
 var SpheroClient = require("./SpheroClient");
 var SyncSphero = syncify(SpheroClient, {reject: ["on", "disconnect"]});
+
 
 function SpheroRunner(options) {
   this._port = options.port;
@@ -14,6 +16,7 @@ SpheroRunner.prototype.runSync = function(code, sandbox, callback) {
 
     try {
 
+      var controller = new Controller();
       var ball = new SyncSphero({port: this._port});
 
       // Initialize ball to something more sane for repeated runs.
