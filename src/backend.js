@@ -26,7 +26,7 @@ module.exports = function run(options) {
 
   app.get("/code/:name", function(req, res) {
     var codePath = getCodePath(req.params.name);
-    var body = "ball.glow(0, 255, 0)\nball.roll(1)\nwait(2)";
+    var body = "ball.glow(0, 255, 0)\nwait(2)\nball.roll(1, 2)";
     if (fs.existsSync(codePath)) {
       body = rfile(codePath);
     }
