@@ -17,10 +17,12 @@ SpheroRunner.prototype.runSync = function(code, socket, callback) {
 
   // Allow the browser to disconnect this ball if it goes crazy.
   var looping = true;
-  socket.on("stop", function() {
-    looping = false;
-    ball.disconnect();
-  });
+  if (socket) {
+    socket.on("stop", function() {
+      looping = false;
+      ball.disconnect();
+    });
+  }
 
   sync(function() {
 
@@ -40,6 +42,9 @@ SpheroRunner.prototype.runSync = function(code, socket, callback) {
           sync.sleep(500);
           callback();
         }
+      }
+      sandbox.wait = function(sec) {
+        sync.sleep(sec * 1000);
       }
       sandbox.ball = ball;
       sandbox.controller = controller;

@@ -85,7 +85,10 @@ module.exports = function run(options) {
       console.log(code);
       console.log(consoleLine);
       console.log("running snippet...");
-      runner.runSync(code);
+      runner.runSync(code, null, function(err) {
+        if (err) return console.error(err.stack);
+        console.info("done running snippet.")
+      });
     });
 
   });
