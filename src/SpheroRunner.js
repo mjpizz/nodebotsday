@@ -8,26 +8,32 @@ function SpheroRunner(options) {
   this._port = options.port;
 }
 
-SpheroRunner.prototype.runSync = function(code) {
+SpheroRunner.prototype.runSync = function(code, sandbox, callback) {
 
   sync(function() {
+
     try {
 
       var ball = new SyncSphero({port: this._port});
+
+      // Initialize ball to something more sane for repeated runs.
       ball.light(true);
       ball.turn(0);
+      ball.wait = function(sec) {
+        return sync.sleep(sec * 1000);
+      }
 
-      vm.runInNewContext(code, {
-        print: console.log,
-        ball: ball,
-        wait: function(sec){return sync.sleep(sec*1000)}
-      }, "SpheroRunner");
-
-      ball.disconnect();
+      // Run the code in a sandbox.
+      sandbox.ball = ball;
+      sandbox.controller = controller;
+      vm.runInNewContext(code, sandbox, "SpheroRunner");
 
     } catch(err) {
-      console.error(err.stack);
+      callback(err);
+    } finally {
+      ball.disconnect();
     }
+    callback();
 
   }.bind(this));
 

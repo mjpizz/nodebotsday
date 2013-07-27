@@ -18,9 +18,8 @@ module.exports = function run(options) {
   app.use(express.static(path.join(__dirname, "..", "public")));
 
   // Serve document editing from /code
-  var runner = new SpheroRunner({port: options.spheroPort});
   function getCodePath(name) {
-    var safeName = name.split(/[\/\.]/g)[0];
+    var safeName = name.split(/[\/\.]/g).slice(-1)[0];
     return path.join(__dirname, "..", "code", safeName) + ".js";
   }
 
@@ -34,42 +33,6 @@ module.exports = function run(options) {
     res.end(codeView({name: req.params.name, body: body}));
   });
 
-  app.post("/code/:name", function(req, res) {
-    var codePath = getCodePath(req.params.name);
-    var code = req.body.value;
-    var consoleLine = "=======================================================";
-    console.log(consoleLine);
-    console.log(code);
-    console.log(consoleLine);
-    console.log(codePath);
-    console.log("saving...");
-    fs.writeFileSync(codePath, code);
-
-    // Run the script if requested.
-    if (req.body.run) {
-      console.log("running...");
-      try {
-        runner.runSync(code);
-      } catch(err) {
-        console.error(err.stack);
-      }
-
-    }
-
-    res.end();
-  });
-
-  app.post("/snippet", function(req, res) {
-    var code = "ball[" + JSON.stringify(req.body.method.toString()) + "].apply(ball, " + JSON.stringify(req.body.args) + ")";
-    var consoleLine = "=======================================================";
-    console.log(consoleLine);
-    console.log(code);
-    console.log(consoleLine);
-    console.log("running snippet...");
-    runner.runSync(code);
-    res.end();
-  });
-
   // Serve all frontend code using enchilada (uses browserify internally).
   app.use("/frontend", enchilada({
     src: path.join(__dirname, "..", "src"),
@@ -77,10 +40,63 @@ module.exports = function run(options) {
   }));
 
   // Set up socket.io events.
+  var runner = new SpheroRunner({port: options.spheroPort});
   var server = http.createServer(app);
   var io = socketio.listen(server);
+
   io.sockets.on("connection", function (socket) {
-    // TODO: use the socket
+
+    function save(codePath, code) {
+      var consoleLine = "=======================================================";
+      console.log(consoleLine);
+      console.log(code);
+      console.log(consoleLine);
+      console.log(codePath);
+      console.log("saving...");
+      fs.writeFileSync(codePath, code);
+    }
+
+    function run(code, stopCallback) {
+      console.log("running...");
+      try {
+
+        // Create a two-way sandbox of functions for the script.
+        var sandbox = {
+          waitForStop: function() {
+            stopCallback.sync(this);
+          }
+        };
+        runner.runSync(code, sandbox, function(err) {
+          if (err) return console.error(err.stack);
+          console.info("done running.")
+        });
+      } catch(err) {
+        console.error(err.stack);
+      }
+    }
+
+    // Handle events from frontend.
+    socket.on("save", function(options) {
+      save(getCodePath(options.path), options.code);
+    });
+
+    socket.on("run", function(options) {
+      save(getCodePath(options.path), options.code);
+      run(options.code, function(callback) {
+        socket.on("stop", callback);
+      });
+    });
+
+    socket.on("call", function(options) {
+      var code = "ball[" + JSON.stringify(options.method.toString()) + "].apply(ball, " + JSON.stringify(options.args) + ")";
+      var consoleLine = "=======================================================";
+      console.log(consoleLine);
+      console.log(code);
+      console.log(consoleLine);
+      console.log("running snippet...");
+      runner.runSync(code);
+    });
+
   });
 
   // Start the server.

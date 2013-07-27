@@ -10,17 +10,22 @@ $(function() {
   editor.getSession().setMode("ace/mode/javascript");
 
   function save() {
-    $.post(location.pathname, {value: editor.getValue()}, "json");
+    socket.emit("save", {path: location.pathname, code: editor.getValue()});
   }
 
   function run() {
-    $.post(location.pathname, {value: editor.getValue(), run: true}, "json");
+    socket.emit("run", {path: location.pathname, code: editor.getValue()});
+  }
+
+  function stop() {
+    // Stops all programs.
+    socket.emit("stop");
   }
 
   function makeButton(method, args) {
     args = args || [];
     var button = $("<div>").text("ball." + method + "(" + JSON.stringify(args).slice(1, -1) + ")").click(function() {
-      $.post("/snippet", {method: method, args: args}, "json");
+      socket.emit("call", {method: method, args: args});
     });
     $("#buttons").append(button);
   }
@@ -40,8 +45,9 @@ $(function() {
     exec: run
   });
 
-  // Make a run button.
+  // Make a run and stop button.
   $("#buttons").append($("<div>").text("RUN IT!").addClass("run").click(run));
+  $("#buttons").append($("<div>").text("STOP IT!").addClass("stop").click(stop));
 
   // Add shortcut buttons.
   makeButton("glow", [255, 0, 0]);
@@ -51,7 +57,7 @@ $(function() {
   makeButton("turn", [90]);
   makeButton("turn", [45]);
   makeButton("turn", [-45]);
-  makeButton("roll", [1]);
-  makeButton("roll", [0.5]);
+  makeButton("roll", [1, 2]);
+  makeButton("roll", [0.5, 3]);
   makeButton("stop");
 });
