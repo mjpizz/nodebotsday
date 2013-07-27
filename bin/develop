@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-BASE=`dirname $0`/..
-SUPERVISOR=$BASE/node_modules/.bin/supervisor
-NODE_ENV=development $SUPERVISOR -w $BASE/src/backend.js,$BASE/public -e "node|js|html" -- $BASE/bin/serve $@
