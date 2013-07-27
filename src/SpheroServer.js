@@ -7,7 +7,6 @@ module.exports = function SpheroServer(options) {
     return new SpheroServer(options)
   }
 
-  this._logger = options.logger || console;
   this._host = "tcp://0.0.0.0:" + options.port;
   this._sphero = options.sphero || new Sphero();
 
@@ -22,7 +21,6 @@ module.exports = function SpheroServer(options) {
       });
     }
 
-    this._logger.log("sphero ready on:", this._host);
     server.bind(this._host);
   }.bind(this));
 
