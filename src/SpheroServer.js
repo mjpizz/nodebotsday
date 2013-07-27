@@ -13,6 +13,15 @@ module.exports = function SpheroServer(options) {
 
   this._sphero.on("connected", function(ball) {
     server = new zerorpc.Server(ball);
+
+    // Modify the event listener to support zerorpc streaming.
+    var originalOn = ball.on;
+    ball.on = function(eventName, reply) {
+      originalOn.call(ball, eventName, function(data) {
+        reply(null, data, true);
+      });
+    }
+
     this._logger.log("sphero ready on:", this._host);
     server.bind(this._host);
   }.bind(this));
