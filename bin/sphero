@@ -7,12 +7,24 @@ var DummySphero = require("../src/DummySphero");
 
 // Keep the app running despite random errors in zerorpc and bluetooth.
 process.on("uncaughtException", function(err){
-  // console.warn("Uncaught Exception:", err.stack);
+  if (/unspecified/.test(err.toString())) {
+    // ignore sporadic errors from zerorpc
+    return;
+  }
+  console.warn("Uncaught Exception:", err.stack);
 });
 
-var port = parseInt(process.argv[2] || 7778);
+function findPort() {
+  process.argv.forEach(function(arg) {
+    if (/^\d+$/.test(arg)) {
+      return parseInt(arg);
+    }
+  })
+}
+
+var port = findPort() || 7778;
 var spheroServer = new SpheroServer({
   port: port,
-  // sphero: new DummySphero()
+  sphero: process.argv.indexOf("--dummy") > 0 ? new DummySphero() : null
 });
 console.log("sphero running on localhost:" + port);
