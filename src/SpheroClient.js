@@ -148,10 +148,12 @@ SpheroClient.prototype.light = function(on) {
 }
 
 SpheroClient.prototype.disconnect = function() {
-  this._client.invoke("setDataStreaming", [], null, null, null);
-  var res = this.stop();
-  this._client.close();
-  return res;
+  var unsetStream = this._invokeAsPromise("setDataStreaming", [], null, null, null);
+  return unsetStream.then(function() {
+    this.stop().then(function() {
+      this._client.close();
+    }.bind(this));
+  }.bind(this))
 }
 
 module.exports = SpheroClient;

@@ -26,7 +26,8 @@ function convertToSyncMethod(method) {
   }
 }
 
-module.exports = function syncify(Class) {
+module.exports = function syncify(Class, options) {
+  options = options || {};
 
   util.inherits(Child, Class);
   function Child() {
@@ -35,6 +36,9 @@ module.exports = function syncify(Class) {
 
   for (var methodName in Child.prototype) {
     if (methodName.charAt(0) !== "_") {
+      if (options.reject && options.reject.indexOf(methodName) >= 0) {
+        continue;
+      }
       Child.prototype[methodName] = convertToSyncMethod(Child.prototype[methodName])
     }
   }
