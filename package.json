@@ -23,11 +23,7 @@
     "rfileify": "1.x",
     "rfile": "1.x",
 
-    "better-stack-traces": "*",
-    "supervisor": "*",
-
-    "glob": "*",
-    "mocha": "*"
+    "better-stack-traces": "*"
 
   },
   "version": "0.0.0",
