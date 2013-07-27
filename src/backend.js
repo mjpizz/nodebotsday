@@ -19,7 +19,6 @@ module.exports = function run(options) {
 
   // Serve document editing from /code
   var runner = new SpheroRunner({port: options.spheroPort});
-  var codeView = Mustache.compile(rfile("./code.html"));
   function getCodePath(name) {
     var safeName = name.split(/[\/\.]/g)[0];
     return path.join(__dirname, "..", "code", safeName) + ".js";
@@ -31,6 +30,7 @@ module.exports = function run(options) {
     if (fs.existsSync(codePath)) {
       body = rfile(codePath);
     }
+    var codeView = Mustache.compile(rfile("./code.html"));
     res.end(codeView({name: req.params.name, body: body}));
   });
 
@@ -56,6 +56,17 @@ module.exports = function run(options) {
 
     }
 
+    res.end();
+  });
+
+  app.post("/snippet", function(req, res) {
+    var code = "ball[" + JSON.stringify(req.body.method.toString()) + "].apply(ball, " + JSON.stringify(req.body.args) + ")";
+    var consoleLine = "=======================================================";
+    console.log(consoleLine);
+    console.log(code);
+    console.log(consoleLine);
+    console.log("running snippet...");
+    runner.runSync(code);
     res.end();
   });
 

@@ -13,6 +13,6 @@ process.on("uncaughtException", function(err){
 var port = parseInt(process.argv[2] || 7778);
 var spheroServer = new SpheroServer({
   port: port,
-  sphero: new DummySphero()
+  // sphero: new DummySphero()
 });
 console.log("sphero running on localhost:" + port);

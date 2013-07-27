@@ -24,12 +24,35 @@
         right: 0;
       }
 
+      #buttons {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        margin: 30px;
+      }
+
+      #buttons div {
+        margin-bottom: 10px;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-family: monospace;
+      }
+
+      #buttons .run {
+        background-color: red;
+      }
+
     </style>
 
   </head>
   <body>
 
     <pre id="editor">{{body}}</pre>
+    <div id="buttons"></div>
 
   </body>
 </html>

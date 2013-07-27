@@ -2,7 +2,7 @@ var vm = require("vm");
 var sync = require("sync");
 var syncify = require("./syncify");
 var SpheroClient = require("./SpheroClient");
-var SyncSphero = syncify(SpheroClient, {reject: ["on"]});
+var SyncSphero = syncify(SpheroClient, {reject: ["on", "disconnect"]});
 
 function SpheroRunner(options) {
   this._port = options.port;
@@ -10,21 +10,20 @@ function SpheroRunner(options) {
 
 SpheroRunner.prototype.runSync = function(code) {
 
-  var wrappedCode = [
-    "ball.light(true);",
-    "ball.turn(0);",
-    code,
-    "ball.disconnect();"
-  ].join("\n");
-
   sync(function() {
     try {
 
-      vm.runInNewContext(wrappedCode, {
+      var ball = new SyncSphero({port: this._port});
+      ball.light(true);
+      ball.turn(0);
+
+      vm.runInNewContext(code, {
         print: console.log,
-        ball: new SyncSphero({port: this._port}),
+        ball: ball,
         wait: function(sec){return sync.sleep(sec*1000)}
       }, "SpheroRunner");
+
+      ball.disconnect();
 
     } catch(err) {
       console.error(err.stack);
