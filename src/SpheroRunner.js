@@ -8,12 +8,13 @@ var SyncSphero = syncify(SpheroClient, {reject: ["on", "disconnect"]});
 
 function SpheroRunner(options) {
   this._port = options.port;
+  this._ball = new SyncSphero({port: this._port});
 }
 
 SpheroRunner.prototype.runSync = function(code, socket, callback) {
 
   var controller = new Controller();
-  var ball = new SyncSphero({port: this._port});
+  var ball = this._ball;
 
   // Allow the browser to disconnect this ball if it goes crazy.
   var looping = true;

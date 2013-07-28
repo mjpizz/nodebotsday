@@ -12,6 +12,7 @@ module.exports = function SpheroServer(options) {
 
   this._sphero.on("connected", function(ball) {
     server = new zerorpc.Server(ball);
+    server.setMaxListeners(999999);
 
     // TODO: figure out issue with listener memory leak
     // // Modify the event listener to support zerorpc streaming.
