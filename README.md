@@ -1,6 +1,14 @@
 # nodebotsday 2013
 
 This is a prototype repo for letting first-time programmers hack on the Sphero.
+Please consider this code as hacked-together quickly for nodebotsday :)
+
+1. Connect the Sphero over bluetooth.
+2. Run `bin/sphero`, which keeps a the bluetooth connection alive and serves Sphero over zerorpc (this should probably change)
+3. Run `bin/web` to get the web interface
+4. Visit localhost:7777/code/whatever, which will give an ACE editor that saves code to `./code`. Warning: this means anybody can just open up the app and save code to your machine :)
+
+# Random Notes
 
 Example...
 
